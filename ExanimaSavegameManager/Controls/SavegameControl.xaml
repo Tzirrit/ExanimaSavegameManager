@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="ExanimaSavegameManager.Controls.SavegameControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ExanimaSavegameManager.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="30" d:DesignWidth="600" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
+            <Label x:Name="lbl_GameName" Content="Game Name" Margin="0,0,10,0" Width="100" FontWeight="Bold" ToolTip="Name of savegame"/>
+            <Button x:Name="btn_Swap" Width="50" Content="Swap" Height="20" Margin="10,0" ToolTip="Replace current savegame with selected backup" Click="btn_Swap_Click"></Button>
+            <Button x:Name="btn_PreviousFile" Width="20" Content="&lt;" ToolTip="Select previous backup" Height="20" Click="btn_PreviousFile_Click"></Button>
+            <Label x:Name="lbl_BackupDate" Content="01.12.2088 13:45:01" ToolTip="Date currently selected backup was created" Width="120"/>
+        <Button x:Name="btn_NextFile" Width="20" Content="&gt;" ToolTip="Select next backup" Height="20" Click="btn_NextFile_Click"></Button>
+    </StackPanel>
+</UserControl>
