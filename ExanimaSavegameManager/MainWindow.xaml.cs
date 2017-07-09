@@ -32,6 +32,7 @@ namespace ExanimaSavegameManager
             if (IsConfigurationValid())
             {
                 g_ConfigurationOverlay.Visibility = Visibility.Hidden;
+                InitialiseSavegameManager();
             }
             else
             {
@@ -39,13 +40,15 @@ namespace ExanimaSavegameManager
                 btn_ConfigurationOK.IsEnabled = IsConfigurationValid();
             }
 
-            InitialiseSavegameManager();
+            
         }
 
         private void InitialiseSavegameManager(bool overwrite = false)
         {
             if (_sgm == null || overwrite)
             {
+                _logger.LogMessage("Initializing SavegameManager...");
+
                 // Initialize SavegameManager
                 _sgm = new SavegameManager(_savegameFolder, _backupFolder, _logger);
 
@@ -68,7 +71,7 @@ namespace ExanimaSavegameManager
             // Start game & wait for it to finish
             Process proc = Process.Start(_gameClient);
             if(proc != null)
-            {
+             {
                 proc.EnableRaisingEvents = true;
                 proc.Exited += OnProcessExited;
 
@@ -231,10 +234,7 @@ namespace ExanimaSavegameManager
 
             g_ConfigurationOverlay.Visibility = Visibility.Hidden;
 
-            if(_sgm != null)
-            {
-                InitialiseSavegameManager(true);
-            }
+            InitialiseSavegameManager(true);
         }
         #endregion
     }
