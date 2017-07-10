@@ -10,13 +10,13 @@ Download the most recent release, or build the project yourself.
 ### Configuration
 When starting for the first time, you need do configure the tool as follows
 
-**Exanima game client**
+**Exanima game client**:
 Where Exanima.exe is located. Usually this is within your Steam folder, e.g. C:\Steam\steamapps\common\Exanima\Exanima.exe
 
-**Savegame path**
+**Savegame path**:
 Where Exanima stores its savegames. Usually this is within the AppData folder of your User, e.g. C:\Users\YOURUSERNAME\AppData\Roaming\Exanima
 
-**Backup path**
+**Backup path**:
 Folder where the tool will store your backups. This can be anywhere, e.g. C:\Users\YOURUSERNAME\AppData\Roaming\Exanima\Backups
 
 ###
