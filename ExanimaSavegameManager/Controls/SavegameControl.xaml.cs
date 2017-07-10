@@ -48,7 +48,7 @@ namespace ExanimaSavegameManager.Controls
         {
             lbl_GameName.Content = GameName;
 
-            btn_Swap.IsEnabled = (_selectedBackupFile != null);
+            btn_Restore.IsEnabled = (_selectedBackupFile != null);
 
             if (_selectedBackupFile != null)
             {
@@ -88,7 +88,7 @@ namespace ExanimaSavegameManager.Controls
             UpdateVisuals();
         }
 
-        private void btn_Swap_Click(object sender, RoutedEventArgs e)
+        private void btn_Restore_Click(object sender, RoutedEventArgs e)
         {
             _sgm.LoadBackup(GameName, _selectedBackupFile);
         }
