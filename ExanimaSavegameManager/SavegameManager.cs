@@ -94,7 +94,7 @@ namespace ExanimaSavegameManager
             }
 
             string targetFilename = $"{sourceFilename}_{DateTime.Now.ToFileTime()}";
-            return CopyFile(SavegameFolder, targetFilename, BackupFolder, sourceFilename);
+            return CopyFile(BackupFolder, targetFilename, SavegameFolder, sourceFilename);
         }
 
         private bool CopyFile(string targetFolder, string targetFilename, string sourceFolder, string sourceFilename)
