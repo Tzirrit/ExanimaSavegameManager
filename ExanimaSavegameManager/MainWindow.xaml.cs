@@ -17,7 +17,7 @@ namespace ExanimaSavegameManager
         private string _gameClient;
         private string _savegameFolder;
         private string _backupFolder;
-        private int _maxBackups;
+        //private int _maxBackups; TODO: Limit maximum number of backups
 
         public MainWindow()
         {
