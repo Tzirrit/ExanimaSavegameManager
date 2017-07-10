@@ -1,6 +1,6 @@
 # A savegame backup tool for Exanima
 
-Exanima by http://www.baremettle.com/ is a great game. However,iIf you want more control over your savegame files, this tool is for you.
+Exanima by http://www.baremettle.com/ is a great game. However, if you want more control over your savegame files, this tool is for you.
 
 The tool monitors Exanimas savegame folder for updates and generates a backup every time a savegame is created or updated. In the inevitable event that unpleasant things happen, you can just "restore" an older savegame.
 
@@ -21,7 +21,7 @@ Folder where the tool will store your backups. This can be anywhere, e.g. C:\Use
 
 ###
 When properly configured, you now start Exanima by clicking on the **Start Game** button. Whenever a new savegame file is created (usually on exiting the game), a backup is created.
-You can see all games by their name (e.g. Arena001, or Exanima003) and available backups by date of creation. Simply select the backup you want to restore and click on the **Swap** button. The tool will now restore that backup (and create a backup of your original savegame, because I hear you like backups).
+You can see all games by their name (e.g. Arena001, or Exanima003) and available backups by date of creation. Simply select the backup you want to restore and click on the **Restore** button. The tool will now restore that backup (and create a backup of your original savegame, because I hear you like backups).
 
 
 ## Note
