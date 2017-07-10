@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ExanimaSavegameManager.Controls
 {
@@ -44,16 +34,11 @@ namespace ExanimaSavegameManager.Controls
 
             if(_backupFiles.Count > 0)
             {
-                if(_selectedBackupFile != null)
+                if(_selectedBackupFile == null)
                 {
                     // Select first backup
                     _selectedBackupFile = _backupFiles[0];
                 }
-            }
-            else if (_selectedBackupFile != null)
-            {
-                // Select no backup
-                _selectedBackupFile = null;
             }
 
             UpdateVisuals();
@@ -105,7 +90,7 @@ namespace ExanimaSavegameManager.Controls
 
         private void btn_Swap_Click(object sender, RoutedEventArgs e)
         {
-
+            _sgm.LoadBackup(GameName, _selectedBackupFile);
         }
     }
 }

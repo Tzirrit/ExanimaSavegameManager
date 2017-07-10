@@ -66,14 +66,14 @@ namespace ExanimaSavegameManager
         {
             LogMessage($"New file '{e.Name}' created.");
 
-            TryBackupFile(e.Name);
+            CreateFileBackup(e.Name);
         }
 
         private void OnFileChanged(object sender, FileSystemEventArgs e)
         {
             LogMessage($"File '{e.Name}' changed.");
 
-            TryBackupFile(e.Name);
+            CreateFileBackup(e.Name);
         }
 
         private void OnFileDeleted(object sender, FileSystemEventArgs e)
@@ -84,7 +84,7 @@ namespace ExanimaSavegameManager
         #endregion
 
         #region File Manipulation
-        private bool TryBackupFile(string filename)
+        private bool CreateFileBackup(string sourceFilename)
         {
             // If backup folder does not exist, create it
             if (!Directory.Exists(BackupFolder))
@@ -93,14 +93,16 @@ namespace ExanimaSavegameManager
                 Directory.CreateDirectory(BackupFolder);
             }
 
-            string targetFilename = $"{filename}_{DateTime.Now.ToFileTime()}";
+            string targetFilename = $"{sourceFilename}_{DateTime.Now.ToFileTime()}";
+            return CopyFile(SavegameFolder, targetFilename, BackupFolder, sourceFilename);
+        }
 
-            LogMessage($"Copying '{filename}' to '{targetFilename}'...");
-
+        private bool CopyFile(string targetFolder, string targetFilename, string sourceFolder, string sourceFilename)
+        {
+            // Will not overwrite if the destination file already exists.
             try
             {
-                // Will not overwrite if the destination file already exists.
-                File.Copy(Path.Combine(SavegameFolder, filename), Path.Combine(BackupFolder, targetFilename));
+                File.Copy(Path.Combine(sourceFolder, sourceFilename), Path.Combine(targetFolder, targetFilename));
             }
             // Catch exception if the file was already copied.
             catch (IOException copyError)
@@ -112,13 +114,12 @@ namespace ExanimaSavegameManager
             return true;
         }
 
-        private bool SwapFiles(string targetFilename, string sourceFilename)
+        private bool ReplaceFile(string targetFilename, string sourceFilename)
         {
             string backupFilename = $"{targetFilename}_{DateTime.Now.ToFileTime()}";
-
+            // Replace target file with source file (creating backup)
             try
             {
-                // Replace target file with source file (creating backup)
                 File.Replace(
                     Path.Combine(BackupFolder, sourceFilename),
                     Path.Combine(SavegameFolder, targetFilename),
@@ -130,8 +131,29 @@ namespace ExanimaSavegameManager
                 _logger.LogMessage(replaceError.Message);
                 return false;
             }
-
             return true;
+        }
+
+        public void LoadBackup(string gameName, string sourceFilename)
+        {
+            _logger.LogMessage($"Restoring backup from {GetBackupDate(sourceFilename)} for game '{gameName}'...");
+
+            bool success = false;
+            string targetFilename = $"{gameName}.rsg";
+            // Check if game save exists
+            if (File.Exists(Path.Combine(SavegameFolder, targetFilename)))
+            {
+                // If so, replace
+                success = ReplaceFile(targetFilename, sourceFilename);
+            }
+            // Otherwise, copy backup
+            else
+            {
+                success = CopyFile(SavegameFolder, targetFilename, BackupFolder, sourceFilename);
+            }
+
+            if (success)
+                _logger.LogMessage("...done.");
         }
 
         public IEnumerable<string> GetValidGames()
@@ -155,7 +177,7 @@ namespace ExanimaSavegameManager
             return validGames;
         }
 
-        public IEnumerable<string> GetGameBackups(string gameName)
+        public IEnumerable<string> GetGameBackups(string gameName, bool verbose = false)
         {
             List<string> backups = new List<string>();
 
@@ -178,7 +200,8 @@ namespace ExanimaSavegameManager
                         long.TryParse(split[1].Substring(4), out filetime);
                         var time = DateTime.FromFileTime(filetime).ToLocalTime();
 
-                        _logger.LogMessage($"Found backup '{split[1]}' for game '{gameName}' from {time}");
+                        if(verbose)
+                            _logger.LogMessage($"Found backup '{split[1]}' for game '{gameName}' from {time}");
                     }
                 }
             }
@@ -215,32 +238,5 @@ namespace ExanimaSavegameManager
                 Console.WriteLine(message);
         }
         #endregion
-
-        // TESTING
-        public void CheckBackups()
-        {
-            string[] filePaths = Directory.GetFiles(BackupFolder);
-            foreach (string filePath in filePaths)
-            {
-                string fileName = Path.GetFileName(filePath);
-                var split = fileName.Split('.');
-                
-                if (split[1].Contains("rsg"))
-                {
-                    _logger.LogMessage($"Exanima file {split[1]} for game {split[0]}");
-
-                    if (split[1].Length > 3)
-                    {
-                        long filetime;
-                        long.TryParse(split[1].Substring(4), out filetime);
-                        var time = DateTime.FromFileTime(filetime).ToLocalTime();
-
-                        _logger.LogMessage($"saved at filetime: {time}");
-                    }
-                }
-            }
-                
-        }
-
     }
 }

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Controls;
+﻿using ExanimaSavegameManager.Controls;
+using System;
 using System.Diagnostics;
-using ExanimaSavegameManager.Controls;
-using System.Collections.Generic;
+using System.Windows;
 
 namespace ExanimaSavegameManager
 {
@@ -19,6 +17,7 @@ namespace ExanimaSavegameManager
         private string _gameClient;
         private string _savegameFolder;
         private string _backupFolder;
+        private int _maxBackups;
 
         public MainWindow()
         {
@@ -32,28 +31,45 @@ namespace ExanimaSavegameManager
             if (IsConfigurationValid())
             {
                 g_ConfigurationOverlay.Visibility = Visibility.Hidden;
+                InitializeSavegameManager();
             }
             else
             {
                 g_ConfigurationOverlay.Visibility = Visibility.Visible;
                 btn_ConfigurationOK.IsEnabled = IsConfigurationValid();
             }
-
-            InitialiseSavegameManager();
         }
 
-        private void InitialiseSavegameManager(bool overwrite = false)
+        private void InitializeSavegameManager(bool overwrite = false)
         {
             if (_sgm == null || overwrite)
             {
+                _logger.LogMessage("Initializing SavegameManager...");
+
                 // Initialize SavegameManager
                 _sgm = new SavegameManager(_savegameFolder, _backupFolder, _logger);
 
-                foreach (var game in _sgm.GetValidGames())
-                {
-                    sp_Controls.Children.Add(new SavegameControl(_sgm, game));
-                }
+                UpdateSavegameControls();
             }
+        }
+
+        private void UpdateSavegameControls()
+        {
+            sp_Controls.Dispatcher.Invoke(
+                  System.Windows.Threading.DispatcherPriority.Normal,
+                  new Action(
+                    delegate ()
+                    {
+                        // Clear old controls
+                        sp_Controls.Children.Clear();
+
+                        // Generate new controls
+                        foreach (var game in _sgm.GetValidGames())
+                        {
+                            sp_Controls.Children.Add(new SavegameControl(_sgm, game));
+                        }
+                    }
+                ));
         }
 
         private void btn_Start_Click(object sender, RoutedEventArgs e)
@@ -65,10 +81,10 @@ namespace ExanimaSavegameManager
             // Start file watcher
             _sgm.Start();
 
-            // Start game & wait for it to finish
+            // Start game
             Process proc = Process.Start(_gameClient);
             if(proc != null)
-            {
+             {
                 proc.EnableRaisingEvents = true;
                 proc.Exited += OnProcessExited;
 
@@ -102,6 +118,8 @@ namespace ExanimaSavegameManager
             _isGameRunning = false;
             _logger.LogMessage($"Exanima exited.");
 
+            // Update SavegameControls
+            UpdateSavegameControls();
         }
 
         private void OnLogMessageAdded(string message)
@@ -137,13 +155,31 @@ namespace ExanimaSavegameManager
             _backupFolder = Properties.Settings.Default.BackupFolder;
         }
 
-        private void SaveConfiguration()
+        private bool SaveConfiguration()
         {
-            Properties.Settings.Default.GameClient = _gameClient;
-            Properties.Settings.Default.SavegameFolder = _savegameFolder;
-            Properties.Settings.Default.BackupFolder = _backupFolder;
+            bool configurationChanged = false;
 
+            if (Properties.Settings.Default.GameClient != _gameClient)
+            {
+                configurationChanged = true;
+                Properties.Settings.Default.GameClient = _gameClient;
+            }
+
+            if(Properties.Settings.Default.SavegameFolder != _savegameFolder)
+            {
+                configurationChanged = true;
+                Properties.Settings.Default.SavegameFolder = _savegameFolder;
+            }
+            
+            if(Properties.Settings.Default.BackupFolder != _backupFolder)
+            {
+                configurationChanged = true;
+                Properties.Settings.Default.BackupFolder = _backupFolder;
+            }
+            
             Properties.Settings.Default.Save();
+
+            return configurationChanged;
         }
 
         private bool IsConfigurationValid()
@@ -227,14 +263,13 @@ namespace ExanimaSavegameManager
 
         private void btn_ConfigurationOK_Click(object sender, RoutedEventArgs e)
         {
-            SaveConfiguration();
+            if(SaveConfiguration())
+            {
+                // Re-Initialize SavegameManager
+                InitializeSavegameManager(true);
+            }
 
             g_ConfigurationOverlay.Visibility = Visibility.Hidden;
-
-            if(_sgm != null)
-            {
-                InitialiseSavegameManager(true);
-            }
         }
         #endregion
     }
