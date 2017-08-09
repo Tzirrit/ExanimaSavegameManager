@@ -14,7 +14,7 @@ namespace ExanimaSavegameManager
         private SavegameManager _sgm;
 
         private bool _isGameRunning;
-        private string _gameClient;
+        private string _client;
         private string _savegameFolder;
         private string _backupFolder;
         //private int _maxBackups; TODO: Limit maximum number of backups
@@ -81,8 +81,20 @@ namespace ExanimaSavegameManager
             // Start file watcher
             _sgm.Start();
 
-            // Start game
-            Process proc = Process.Start(_gameClient);
+            // Start game directly or via steam
+            Process proc;
+            if (_client.Contains("Steam.exe"))
+            {
+                string steamArgs = $"-applaunch {Properties.Settings.Default.SteamAppId}";
+                _logger.LogMessage($"Launching via Steam...");
+
+                proc = Process.Start(_client, steamArgs);
+            }
+            else
+            {
+                proc = Process.Start(_client);
+            }
+
             if(proc != null)
              {
                 proc.EnableRaisingEvents = true;
@@ -105,7 +117,7 @@ namespace ExanimaSavegameManager
 
         private void btn_Configure_Click(object sender, RoutedEventArgs e)
         {
-            tb_CfgGameDirectory.Text = _gameClient;
+            tb_CfgClient.Text = _client;
             tb_CfgSavegamePath.Text = _savegameFolder;
             tb_CfgBackupPath.Text = _backupFolder;
 
@@ -150,19 +162,22 @@ namespace ExanimaSavegameManager
         #region Configuration
         private void LoadConfiguration()
         {
-            _gameClient = Properties.Settings.Default.GameClient;
+            _client = Properties.Settings.Default.GameClient;
             _savegameFolder = Properties.Settings.Default.SavegameFolder;
             _backupFolder = Properties.Settings.Default.BackupFolder;
+
+            // Set client selection checkbox (hacky)
+            cb_CfgUseSteam.IsChecked = (_client != null && _client.Contains("Steam.exe"));
         }
 
         private bool SaveConfiguration()
         {
             bool configurationChanged = false;
 
-            if (Properties.Settings.Default.GameClient != _gameClient)
+            if (Properties.Settings.Default.GameClient != _client)
             {
                 configurationChanged = true;
-                Properties.Settings.Default.GameClient = _gameClient;
+                Properties.Settings.Default.GameClient = _client;
             }
 
             if(Properties.Settings.Default.SavegameFolder != _savegameFolder)
@@ -184,7 +199,7 @@ namespace ExanimaSavegameManager
 
         private bool IsConfigurationValid()
         {
-            if (_gameClient == null || _gameClient == "")
+            if (_client == null || _client == "")
                 return false;
 
             if (_savegameFolder == null || _savegameFolder == "")
@@ -196,22 +211,48 @@ namespace ExanimaSavegameManager
             return true;
         }
 
-        private void tb_CfgGameDirectory_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+
+        private void cb_CfgUseSteam_Checked(object sender, RoutedEventArgs e)
+        {
+            // If client is not steam
+            if(_client != null && !_client.Contains("Steam.exe"))
+            {
+                // Reset path
+                tb_CfgClient.Text = null;
+                _client = null;
+
+                btn_ConfigurationOK.IsEnabled = false;
+            }
+        }
+
+        private void cb_CfgUseSteam_Unchecked(object sender, RoutedEventArgs e)
+        {
+            // If client is not exanima
+            if (_client != null && !_client.Contains("Exanima.exe"))
+            {
+                // Reset path
+                tb_CfgClient.Text = null;
+                _client = null;
+
+                btn_ConfigurationOK.IsEnabled = false;
+            }
+        }
+        private void tb_CfgClient_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             var fileDialog = new System.Windows.Forms.OpenFileDialog();
-            fileDialog.Filter = "Exanima game client |Exanima.exe";
+            fileDialog.Filter = (cb_CfgUseSteam.IsChecked==true) ? "Steam client|Steam.exe" : "Exanima client|Exanima.exe";
             var result = fileDialog.ShowDialog();
             switch (result)
             {
                 case System.Windows.Forms.DialogResult.OK:
                     var file = fileDialog.FileName;
-                    tb_CfgGameDirectory.Text = file;
-                    _gameClient = file;
+                    tb_CfgClient.Text = file;
+                    _client = file;
                     break;
 
                 case System.Windows.Forms.DialogResult.Cancel:
                 default:
-                    tb_CfgGameDirectory.Text = null;
+                    tb_CfgClient.Text = null;
                     break;
             }
             btn_ConfigurationOK.IsEnabled = IsConfigurationValid();
@@ -235,7 +276,6 @@ namespace ExanimaSavegameManager
                     tb_CfgSavegamePath.Text = null;
                     break;
             }
-
             btn_ConfigurationOK.IsEnabled = IsConfigurationValid();
         }
 
@@ -257,7 +297,6 @@ namespace ExanimaSavegameManager
                     tb_CfgBackupPath.Text = null;
                     break;
             }
-
             btn_ConfigurationOK.IsEnabled = IsConfigurationValid();
         }
 
@@ -268,7 +307,6 @@ namespace ExanimaSavegameManager
                 // Re-Initialize SavegameManager
                 InitializeSavegameManager(true);
             }
-
             g_ConfigurationOverlay.Visibility = Visibility.Hidden;
         }
         #endregion

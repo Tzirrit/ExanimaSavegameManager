@@ -22,16 +22,17 @@
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Label FontWeight="Bold">Configuration</Label>
                 <StackPanel Orientation="Horizontal" Margin="2">
-                    <Label Content="Exanima game client: " Width="120" ToolTip="Exanima game client. Usually \Steam\steamapps\common\Exanima\Exanima.exe"/>
-                    <TextBox x:Name="tb_CfgGameDirectory" Width="300" HorizontalAlignment="Center" VerticalAlignment="Center" PreviewMouseDown="tb_CfgGameDirectory_PreviewMouseDown"/>
+                    <Label Content="Client" ToolTip="Path to game client (Exanima.exe) or steam client (Steam.exe)" Margin="0" Width="40"/>
+                    <CheckBox x:Name="cb_CfgUseSteam" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Steam" Width="60" Margin="0,0,2,0" Checked="cb_CfgUseSteam_Checked" Unchecked="cb_CfgUseSteam_Unchecked"/>
+                    <TextBox x:Name="tb_CfgClient" Width="380" HorizontalAlignment="Center" VerticalAlignment="Center" PreviewMouseDown="tb_CfgClient_PreviewMouseDown"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="2">
-                    <Label Content="Savegame path: " Width="120" ToolTip="Path to Exanima savegames. Usually C:\Users\USERNAME\AppData\Roaming\Exanima\."/>
-                    <TextBox x:Name="tb_CfgSavegamePath" Width="300" HorizontalAlignment="Center" VerticalAlignment="Center" PreviewMouseDown="tb_CfgSavegamePath_PreviewMouseDown"/>
+                    <Label Content="Savegame path" Width="100" ToolTip="Path to Exanima savegames. Usually C:\Users\USERNAME\AppData\Roaming\Exanima\" Margin="0,0,2,0"/>
+                    <TextBox x:Name="tb_CfgSavegamePath" Width="380" HorizontalAlignment="Center" VerticalAlignment="Center" PreviewMouseDown="tb_CfgSavegamePath_PreviewMouseDown"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="2">
-                    <Label Content="Backup path: " Width="120" ToolTip="Path where savegame backups will be stored."/>
-                    <TextBox x:Name="tb_CfgBackupPath" Width="300" PreviewMouseDown="tb_CfgBackupPath_PreviewMouseDown" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Label Content="Backup path" Width="100" ToolTip="Path where savegame backups will be stored" Margin="0,0,2,0"/>
+                    <TextBox x:Name="tb_CfgBackupPath" Width="380" PreviewMouseDown="tb_CfgBackupPath_PreviewMouseDown" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </StackPanel>
                 <Button x:Name="btn_ConfigurationOK" Content="Save Configuration" ToolTip="Saves configuration settings" Margin="2" Click="btn_ConfigurationOK_Click"></Button>
             </StackPanel>

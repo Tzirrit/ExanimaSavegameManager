@@ -58,5 +58,14 @@ namespace ExanimaSavegameManager.Properties {
                 this["BackupFolder"] = value;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("362490")]
+        public string SteamAppId {
+            get {
+                return ((string)(this["SteamAppId"]));
+            }
+        }
     }
 }

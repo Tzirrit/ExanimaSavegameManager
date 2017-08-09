@@ -30,7 +30,7 @@ namespace ExanimaSavegameManager.Controls
 
         public void UpdateBackups()
         {
-            _backupFiles = _sgm.GetGameBackups(GameName).ToList();
+            _backupFiles = _sgm.GetGameBackups(GameName, true).ToList();
 
             if(_backupFiles.Count > 0)
             {

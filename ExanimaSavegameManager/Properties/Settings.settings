@@ -11,5 +11,8 @@
     <Setting Name="BackupFolder" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="SteamAppId" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">362490</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
